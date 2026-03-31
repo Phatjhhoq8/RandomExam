@@ -1,93 +1,95 @@
-# Project Rules - TryHairStyle
+# MathQuiz AI - Cursor Rules
 
-## 1. AI Role & Context
-- **Persona:** You are a **Senior Developer** assisting an IT student.
-- **Project Name:** `TryHairStyle`
-- **Goal:** AI system to transfer hairstyles from a sample image onto a user's face photo using machine learning (Diffusion Models).
+## Identity
+- Project: `MathQuiz AI`
+- Product: Vietnamese math exam generator and online quiz system
+- Main app directory: `app/`
+- Source of truth: `plan/init.md`, `plan/update1.md`
 
----
+## Tech Stack
+- Next.js 16 App Router
+- TypeScript
+- React 19
+- Tailwind CSS v4
+- KaTeX for math rendering
+- Zod for schemas and validation
+- `ai` and `@ai-sdk/google` for AI integration
 
-## 2. Communication Protocol
-- **Language:** Always respond in **Vietnamese**.
-- **Terminology:** Keep technical terms in **English** (e.g., API, Component, State, Diffusion, VRAM).
-- **Explanation Style:** Simple descriptions with concrete examples.
-- **Transparency:** Ask for clarification if a request is ambiguous. Explain the "why" behind logic and changes.
+## Repo Structure
+- Routes and app shell: `app/src/app`
+- UI components: `app/src/components`
+- Business logic and helpers: `app/src/lib`
+- Do not invent a different architecture unless explicitly requested
 
----
+## Communication
+- Always reply in Vietnamese unless the user asks otherwise
+- Keep common technical terms in English
+- Be concise, practical, and tied to the actual codebase
+- Inspect the repo before asking clarifying questions
 
-## 3. Technical Stack & Environment
-- **Languages:** Python, JavaScript.
-- **AI/Models:** Python, SDXL, InsightFace, Diffusion Models.
-- **Backend:** FastAPI, Celery.
-- **Database/Broker:** Redis.
-- **Frontend:** ReactJS (Vite), TailwindCSS.
-- **OS:** Linux Ubuntu via **WSL2**.
-- **GPU:** NVIDIA RTX 3060 (12GB VRAM).
-- **Deployment:** Docker CLI + NVIDIA Container Toolkit.
-- **Workflow Requirement:** Always use the active virtual environment (`venv_wsl`).
+## Core Working Rules
+- Follow the current codebase, not generic assumptions
+- Keep MVP behavior stable unless the task explicitly changes scope
+- Be honest about partial implementations
+- Do not describe mock features as completed production features
+- Reuse existing utilities, schemas, and patterns before adding new ones
 
----
+## Product Reality
+- AI generation is not fully production-ready if code still uses mock data
+- OCR is not fully implemented if flow still depends on mocked parsing
+- Weakness analysis may be heuristic and client-side unless server or AI logic is added
+- `app/README.md` is boilerplate and not the product spec
 
-## 4. Development Standards
-### 4.1. Naming Conventions
-- **Variables/Functions:** `camelCase` (e.g., `userName`, `getUserById`).
-- **Classes:** `PascalCase` (e.g., `UserService`).
-- **Constants:** `SCREAMING_CASE` (e.g., `MAX_RETRY`).
-- **Files:** `snake_case` (Python - `user_service.py`) or `kebab-case` (JS - `user-card.jsx`).
+## Architecture Rules
+- Put UI rendering in components
+- Put domain logic, transformations, grading, persistence helpers, and AI helpers in `lib`
+- Validate API input and output with Zod where appropriate
+- Keep components focused and avoid mixing UI with heavy business logic
+- Preserve quiz flow: config -> generate -> quiz -> result -> weakness / OCR review
 
-### 4.2. Code Quality
-- **Modularity:** High priority on modular code.
-- **Separation of Concerns:** Clear split between Logic and UI.
-- **Single Responsibility:** Each file/module should have one primary task.
-- **Comments:** In Vietnamese for complex logic; focus on **why** rather than **what**.
+## UI Rules
+- Preserve the existing visual language unless redesign is requested
+- Keep desktop and mobile behavior working
+- Keep KaTeX output readable
+- Do not break keyboard shortcuts, timer flow, or answer selection UX
 
----
+## Anti-Cheat Rules
+- Preserve question and option randomization
+- Preserve timer and submit behavior
+- Preserve tab-switch tracking and warnings unless explicitly changing that behavior
+- Preserve quiz session persistence unless replacing it with a better verified solution
 
-## 5. Operational Workflow
-1.  **Understand:** Read and confirm requirements.
-2.  **Plan:** Propose designs or directory structures before coding.
-3.  **Implement:** Write code with clear explanations.
-4.  **Test:** Provide instructions for local testing/verification.
-5.  **Git:**
-    - Always run `git status` before committing.
-    - If code is bug-free: Commit (descriptive English message) and **Auto-push** to GitHub.
-6.  **Documentation:** Update `README.md` and `Dockerfile` if changes affect setup or dependencies.
+## Code Style
+- Variables and functions: `camelCase`
+- Components and types: `PascalCase`
+- Constants: `SCREAMING_SNAKE_CASE`
+- Follow existing file naming patterns in this repo
+- Prefer simple and readable code over clever abstractions
+- Add comments only when needed for non-obvious logic
+- Avoid new dependencies unless clearly justified
 
----
+## Workflow
+- Read relevant files first
+- For non-trivial tasks, form a short plan before editing
+- Make the smallest correct change that fits the current architecture
+- After changes, run the smallest useful verification available
+- If tests do not exist, give manual verification steps
 
-## 6. Error Handling & Debugging
-When an error occurs:
-1.  Identify the **Root Cause**.
-2.  Analyze **Why** it happened.
-3.  Provide the fix with an explanation.
-4.  Suggest **Prevention** strategies for the future.
+## Validation Priorities
+- Config form validation
+- `/api/generate`
+- Quiz timer and submit flow
+- Grading correctness
+- Weakness analysis behavior
+- OCR upload and review flow
 
----
+## Git Safety
+- Never auto-push
+- Never commit unless explicitly asked
+- Do not rewrite history unless explicitly asked
+- Avoid destructive commands
+- Respect unrelated user changes in the workspace
 
-## 7. Model Training Rules
-- **Monitoring:** Every training session must produce a **Loss Chart**.
-- **Evaluation:** Every training session must produce **Test Quality Images**.
-- **Reference:** Follow processes defined in `QUY_TRINH.md`.
-
----
-
-## 8. Reference Links & Resources
-- **Algorithms:**
-    - [HairFusion](https://github.com/cychungg/HairFusion)
-    - [Stable-Hair](https://github.com/Xiaojiu-z/Stable-Hair)
-- **UI Context:** `C:\Users\Admin\Desktop\HairFusion-main`
-
----
-
-## 9. Core Behavioral Constraints (Do's & Don'ts)
-✅ **YES:**
-- Each turn, focus on **one task at a time**.
-- Ask for permission **before** modifying existing code.
-- Provide runnable code.
-- Cite sources or related knowledge.
-
-❌ **NO:**
-- **No Guessing:** If unsure, state: "Tôi không chắc về điều này".
-- **No Silent Changes:** Never change critical logic without explicit consent.
-- **No Complexity:** Avoid unnecessary jargon.
-- **No Warnings Ignored:** Always address potential risks.
+## Next.js Warning
+- This project uses a newer Next.js version
+- Verify framework-specific behavior from the local repo and current docs before changing APIs or conventions
