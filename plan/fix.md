@@ -1,193 +1,193 @@
-# Fix Plan - bat buoc truoc `update2`
+# Fix Plan - bắt buộc trước `update2`
 
-## 1. Muc tieu
+## 1. Mục tiêu
 
-File nay chi gom nhung viec bat buoc phai xong truoc khi chot va mo scope `update2`.
+File này chỉ gồm những việc bắt buộc phải xong trước khi chốt và mở scope `update2`.
 
-Nguyen tac tach scope:
-- `fix` = sua bug logic, data, flow MVP, product honesty, va quality gate
+Nguyên tắc tách scope:
+- `fix` = sửa bug logic, data, flow MVP, product honesty, và quality gate
 - `update2` = auth, classroom, assignment, quota, billing, community solutions
-- `update3` = nang cap sau `update2`, khong phai blocker de on dinh san pham hien tai
+- `update3` = nâng cấp sau `update2`, không phải blocker để ổn định sản phẩm hiện tại
 
 ---
 
-## 2. Dieu kien xong `fix`
+## 2. Điều kiện xong `fix`
 
-Chi duoc xem la xong khi dat du cac nhom sau:
-- khong con bug blocker gay sai dap an, sai source, sai state, sai route co ban
-- local bank/template da duoc lam sach toi thieu va co gate chan du lieu loi moi
-- flow MVP hien tai chay on dinh, khong overclaim so voi code that
-- docs va UI wording khop voi muc do hoan thien that su
+Chỉ được xem là xong khi đạt đủ các nhóm sau:
+- không còn bug blocker gây sai đáp án, sai source, sai state, sai route cơ bản
+- local bank/template đã được làm sạch tối thiểu và có gate chặn dữ liệu lỗi mới
+- flow MVP hiện tại chạy ổn định, không overclaim so với code thật
+- docs và UI wording khớp với mức độ hoàn thiện thật sự
 - quality gate pass: `npm test`, `npm run lint`, `npm run build`
 
 ---
 
-## 3. Thu tu thuc hien de xuat
+## 3. Thứ tự thực hiện đề xuất
 
-Lam theo thu tu nay de giam rui ro:
+Làm theo thứ tự này để giảm rủi ro:
 
-1. Sua blocker logic
-2. Them validation gate va lam sach data local
+1. Sửa blocker logic
+2. Thêm validation gate và làm sạch data local
 3. Hardening flow quiz / recovery / OCR / weakness
-4. Chot product honesty trong UI va README
-5. Chay quality gate va test tay flow chinh
+4. Chốt product honesty trong UI và README
+5. Chạy quality gate và test tay flow chính
 
 ---
 
-## 4. Nhom A - Blocker logic phai sua ngay
+## 4. Nhóm A - Blocker logic phải sửa ngay
 
-### A1. Template engine sinh sai dap an
+### A1. Template engine sinh sai đáp án
 
-Bat buoc fix:
-- sua `app/src/lib/template-engine.ts`
-- bo logic co dinh `correctAnswer: "A"`
-- khi sinh option moi, phai xac dinh lai option nao trung voi dap an dung that su
-- neu khong map duoc dap an an toan thi khong duoc tra ve cau hoi
-- bo sung test cho truong hop option bi thay doi gia tri sau khi substitute
+Bắt buộc fix:
+- sửa `app/src/lib/template-engine.ts`
+- bỏ logic cố định `correctAnswer: "A"`
+- khi sinh option mới, phải xác định lại option nào trùng với đáp án đúng thật sự
+- nếu không map được đáp án an toàn thì không được trả về câu hỏi
+- bổ sung test cho trường hợp option bị thay đổi giá trị sau khi substitute
 
-Vi sao nam trong `fix`:
-- day la bug logic anh huong truc tiep do dung cua de thi
+Vì sao nằm trong `fix`:
+- đây là bug logic ảnh hưởng trực tiếp độ đúng của đề thi
 
-### A2. Exam builder bo qua `questionSource`
+### A2. Exam builder bỏ qua `questionSource`
 
-Bat buoc fix:
-- sua `app/src/lib/exam-builder.ts`
-- sua `app/src/components/ConfigFormV2.tsx`
-- ton trong day du `questionSource`:
+Bắt buộc fix:
+- sửa `app/src/lib/exam-builder.ts`
+- sửa `app/src/components/ConfigFormV2.tsx`
+- tôn trọng đầy đủ `questionSource`:
   - `ai`
   - `bank`
   - `mixed`
-- chi save vao bank cac cau moi duoc tao that su, khong duoc danh dau cau bank thanh `source: "ai"`
-- neu mode `bank` khong du cau thi phai bao loi ro rang, khong silently fallback sang AI
+- chỉ save vào bank các câu mới được tạo thật sự, không được đánh dấu câu bank thành `source: "ai"`
+- nếu mode `bank` không đủ câu thì phải báo lỗi rõ ràng, không silently fallback sang AI
 
-Vi sao nam trong `fix`:
-- day la bug logic va bug metadata, anh huong truc tiep chat luong kho cau hoi
+Vì sao nằm trong `fix`:
+- đây là bug logic và bug metadata, ảnh hưởng trực tiếp chất lượng kho câu hỏi
 
-### A3. Loi ky thuat tren bank API
+### A3. Lỗi kỹ thuật trên bank API
 
-Bat buoc fix:
-- sua `app/src/app/api/bank/route.ts`
-- import dung `crypto` neu tiep tuc dung `crypto.randomUUID()`
-- validate ky du lieu incoming, tranh route loi runtime va tranh luu cau hoi sai co ban
+Bắt buộc fix:
+- sửa `app/src/app/api/bank/route.ts`
+- import đúng `crypto` nếu tiếp tục dùng `crypto.randomUUID()`
+- validate kỹ dữ liệu incoming, tránh route lỗi runtime và tránh lưu câu hỏi sai cơ bản
 
-### A4. Quiz state / retry / submit can on dinh
+### A4. Quiz state / retry / submit cần ổn định
 
-Bat buoc fix:
-- sua `app/src/components/QuizEngine.tsx`
-- sua `app/src/app/page.tsx`
-- dam bao auto-submit, timer, recovery, retry, beforeunload, tab-switch khong gay state loi hoac submit lap
-- dam bao retry bat dau sach state moi, khong day lai exam da shuffle nhieu lan theo cach kho kiem soat
+Bắt buộc fix:
+- sửa `app/src/components/QuizEngine.tsx`
+- sửa `app/src/app/page.tsx`
+- đảm bảo auto-submit, timer, recovery, retry, beforeunload, tab-switch không gây state lỗi hoặc submit lặp
+- đảm bảo retry bắt đầu sạch state mới, không đẩy lại exam đã shuffle nhiều lần theo cách khó kiểm soát
 
 ---
 
-## 5. Nhom B - Validation gate va data cleanup bat buoc
+## 5. Nhóm B - Validation gate và data cleanup bắt buộc
 
-### B1. Lam sach Question Bank
+### B1. Làm sạch Question Bank
 
-Bat buoc fix:
+Bắt buộc fix:
 - audit `app/src/data/question-bank.json`
-- sua cac ban ghi mau thuan giua:
+- sửa các bản ghi mâu thuẫn giữa:
   - `correctAnswer`
   - options
   - `solution`
-- loai bo cac cau demo khong dang tin cay neu khong sua an toan duoc
+- loại bỏ các câu demo không đáng tin cậy nếu không sửa an toàn được
 
-### B2. Lam sach Template store
+### B2. Làm sạch Template store
 
-Bat buoc fix:
+Bắt buộc fix:
 - audit `app/src/data/templates.json`
-- sua/loai bo template sai do duoc trich tu bank loi
-- dam bao `solutionTemplate` khop `contentTemplate` va dap an thuc te
+- sửa/loại bỏ template sai do được trích từ bank lỗi
+- đảm bảo `solutionTemplate` khớp `contentTemplate` và đáp án thực tế
 
-### B3. Chan du lieu loi di vao pipeline
+### B3. Chặn dữ liệu lỗi đi vào pipeline
 
-Bat buoc fix:
-- bo sung validation truoc khi save vao bank trong `app/src/lib/question-bank.ts` va `app/src/app/api/bank/route.ts`
-- bo sung validation truoc khi luu template trong `app/src/lib/template-engine.ts`
-- OCR -> bank -> template extraction phai co gate toi thieu, khong tai su dung du lieu da biet la sai
+Bắt buộc fix:
+- bổ sung validation trước khi save vào bank trong `app/src/lib/question-bank.ts` và `app/src/app/api/bank/route.ts`
+- bổ sung validation trước khi lưu template trong `app/src/lib/template-engine.ts`
+- OCR -> bank -> template extraction phải có gate tối thiểu, không tái sử dụng dữ liệu đã biết là sai
 
-Vi sao nam trong `fix`:
-- neu khong chan du lieu sai tu goc, moi mo rong sau `update2` deu co nguy co xay tren nen sai
+Vì sao nằm trong `fix`:
+- nếu không chặn dữ liệu sai từ gốc, mọi mở rộng sau `update2` đều có nguy cơ xây trên nền sai
 
 ---
 
-## 6. Nhom C - Hardening flow MVP hien tai
+## 6. Nhóm C - Hardening flow MVP hiện tại
 
 ### C1. Session recovery / retry / anti-cheat
 
-Bat buoc fix:
-- hoan thien recovery flow trong `app/src/components/QuizEngine.tsx` va `app/src/app/page.tsx`
-- refresh/mo lai tab phai khoi phuc dung state can thiet
-- retry khong hong state cu va khong tu tang sai lich su adaptive
-- xac nhan shuffle question/options khong lam sai grading
+Bắt buộc fix:
+- hoàn thiện recovery flow trong `app/src/components/QuizEngine.tsx` và `app/src/app/page.tsx`
+- refresh/mở lại tab phải khôi phục đúng state cần thiết
+- retry không hỏng state cũ và không tự tăng sai lịch sử adaptive
+- xác nhận shuffle question/options không làm sai grading
 
-### C2. OCR va Weakness phai trung thuc voi thuc te
+### C2. OCR và Weakness phải trung thực với thực tế
 
-Bat buoc fix:
-- cap nhat `app/src/components/OCRUpload.tsx` de co review/edit MVP that su, hoac ghi ro la review/delete only neu chua edit du
-- OCR khong nen auto-day cau hoi chua verify vao bank theo cach overclaim
-- cap nhat `app/src/components/WeaknessView.tsx` de tach ro heuristic va AI mode
-- UI khong noi qua muc do hoan thien cua he thong
+Bắt buộc fix:
+- cập nhật `app/src/components/OCRUpload.tsx` để có review/edit MVP thật sự, hoặc ghi rõ là review/delete only nếu chưa edit đủ
+- OCR không nên auto-đẩy câu hỏi chưa verify vào bank theo cách overclaim
+- cập nhật `app/src/components/WeaknessView.tsx` để tách rõ heuristic và AI mode
+- UI không nói quá mức độ hoàn thiện của hệ thống
 
-### C3. Adaptive chi thuoc practice mode
+### C3. Adaptive chỉ thuộc practice mode
 
-Bat buoc fix:
-- flow hien tai phai ghi adaptive theo huong `self_practice`, khong de logic nay mo rong sai khi sang `update2`
-- cap nhat wording va code lien quan neu can de tach ro practice flow voi flow khac
+Bắt buộc fix:
+- flow hiện tại phải ghi adaptive theo hướng `self_practice`, không để logic này mở rộng sai khi sang `update2`
+- cập nhật wording và code liên quan nếu cần để tách rõ practice flow với flow khác
 
 ### C4. Print metadata flow va docs implementation
 
-Bat buoc fix:
-- noi metadata in de that su tu form vao preview in
-- xac nhan thong tin truong/lop/hoc ky/nam hoc di vao print layout neu da claim co
-- neu chua co field nao thi README/UI khong duoc claim qua muc thuc te
+Bắt buộc fix:
+- nối metadata in đề thật sự từ form vào preview in
+- xác nhận thông tin trường/lớp/học kỳ/năm học đi vào print layout nếu đã claim có
+- nếu chưa có field nào thì README/UI không được claim quá mức thực tế
 
 ---
 
-## 7. Nhom D - Product honesty, docs, va scope cleanup
+## 7. Nhóm D - Product honesty, docs, và scope cleanup
 
 ### D1. README phai khop code that
 
 Bat buoc fix:
-- cap nhat `app/README.md` cho dung voi code that
-- bo huong dan sai ve `.env.example` neu file khong ton tai
-- khong liet ke feature da implement neu no moi la partial/demo
+- cập nhật `app/README.md` cho đúng với code thật
+- bỏ hướng dẫn sai về `.env.example` nếu file không tồn tại
+- không liệt kê feature đã implement nếu nó mới là partial/demo
 
 ### D2. UI wording phai khop tinh trang that
 
 Bat buoc fix:
-- cap nhat wording tren home, OCR, weakness, dashboard, print neu can
-- phan nao la fallback/mock/heuristic phai duoc noi ro
+- cập nhật wording trên home, OCR, weakness, dashboard, print nếu cần
+- phần nào là fallback/mock/heuristic phải được nói rõ
 
 ### D3. Route/component scope cleanup
 
-Nguyen tac:
-- chi giu trong `fix` nhung muc that su can de MVP chay on va de test
-- `DifficultyDistribution.tsx` la refactor tu chon, khong con xem la blocker neu logic trong `ConfigFormV2` da du
-- `app/src/app/api/bank/[id]/route.ts` la muc nen co de chuan hoa CRUD va test, nhung khong uu tien cao hon bug blocker neu flow hien tai van on
+Nguyên tắc:
+- chỉ giữ trong `fix` những mục thật sự cần để MVP chạy ổn và để test
+- `DifficultyDistribution.tsx` là refactor tùy chọn, không còn xem là blocker nếu logic trong `ConfigFormV2` đã đủ
+- `app/src/app/api/bank/[id]/route.ts` là mục nên có để chuẩn hóa CRUD và test, nhưng không ưu tiên cao hơn bug blocker nếu flow hiện tại vẫn ổn
 
 ---
 
-## 8. Nhom E - Quality gate bat buoc
+## 8. Nhóm E - Quality gate bắt buộc
 
-Phai dat duoc:
+Phải đạt được:
 - `npm test` pass
 - `npm run lint` pass
 - `npm run build` pass
 
-Phai kiem tra tay toi thieu:
+Phải kiểm tra tay tối thiểu:
 - config -> generate -> quiz -> submit -> result -> weakness
-- upload anh -> review -> confirm -> quiz
+- upload ảnh -> review -> confirm -> quiz
 - refresh/reopen -> session recovery
-- retry quiz khong hong state
-- shuffle question/options khong sai grading
-- generate print -> preview -> in de / in dap an
+- retry quiz không hỏng state
+- shuffle question/options không sai grading
+- generate print -> preview -> in đề / in đáp án
 
-Neu chua dat, khong duoc xem la da xong `fix`.
+Nếu chưa đạt, không được xem là đã xong `fix`.
 
 ---
 
-## 9. Danh sach file chinh trong `fix`
+## 9. Danh sách file chính trong `fix`
 
 - `app/src/lib/template-engine.ts`
 - `app/src/lib/exam-builder.ts`
@@ -205,13 +205,13 @@ Neu chua dat, khong duoc xem la da xong `fix`.
 
 ---
 
-## 10. Dinh nghia xong `fix`
+## 10. Định nghĩa xong `fix`
 
-Chi duoc xem la xong `fix` khi:
-- blocker logic da duoc sua
-- local data da duoc lam sach toi thieu va co validation gate moi
-- flow MVP chinh da on dinh
-- docs/UI khong con overclaim
-- quality gate va test tay flow chinh deu dat
+Chỉ được xem là xong `fix` khi:
+- blocker logic đã được sửa
+- local data đã được làm sạch tối thiểu và có validation gate mới
+- flow MVP chính đã ổn định
+- docs/UI không còn overclaim
+- quality gate và test tay flow chính đều đạt
 
-Sau moc nay moi nen di tiep sang `update2`.
+Sau mốc này mới nên đi tiếp sang `update2`.

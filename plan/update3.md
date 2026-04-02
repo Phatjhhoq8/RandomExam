@@ -1,102 +1,102 @@
-# Ke hoach `update3` - Phan tach ra sau `update2`
+# Kế hoạch `update3` - Phân tách ra sau `update2`
 
-## 1. Muc dich
+## 1. Mục đích
 
-File nay gom cac hang muc duoc tach ra khoi `fix` vi khong phai blocker truoc `update2`, nhung van can de san pham day du hon sau `update2`.
+File này gồm các hạng mục được tách ra khỏi `fix` vì không phải blocker trước `update2`, nhưng vẫn cần để sản phẩm đầy đủ hơn sau `update2`.
 
-Nguyen tac:
-- nhung gi lam sai ket qua, sai data, vo flow chinh thi khong dua vao day
-- nhung gi la nang cap trust, intelligence, cloud, va van hanh mo rong thi dua vao `update3`
+Nguyên tắc:
+- những gì làm sai kết quả, sai data, vỡ flow chính thì không đưa vào đây
+- những gì là nâng cấp trust, intelligence, cloud, và vận hành mở rộng thì đưa vào `update3`
 
 ---
 
-## 2. Pham vi `update3`
+## 2. Phạm vi `update3`
 
-`update3` se tap trung vao 5 nhom lon:
+`update3` sẽ tập trung vào 5 nhóm lớn:
 
-- verification va trust layer nang cao
-- OCR nang cao va grade scan
-- adaptive difficulty hoan chinh
-- classroom intelligence va teaching analytics nang cao
+- verification và trust layer nâng cao
+- OCR nâng cao và grade scan
+- adaptive difficulty hoàn chỉnh
+- classroom intelligence và teaching analytics nâng cao
 - docs/ops/platform maturity
 
 ---
 
-## 3. Nhom A - Verification 5 lop day du
+## 3. Nhóm A - Verification 5 lớp đầy đủ
 
-Muc tieu:
-- dua he thong tu muc "co generate" len muc "dang tin" hon
+Mục tiêu:
+- đưa hệ thống từ mức "có generate" lên mức "đáng tin" hơn
 
-Cong viec:
-- nang cap `app/src/lib/verification.ts` thanh 5-layer theo ke hoach:
+Công việc:
+- nâng cấp `app/src/lib/verification.ts` thành 5-layer theo kế hoạch:
   - Self-Verify
   - Backward Check
   - Bank Comparison
   - Rule Validation
   - Confidence Score
-- luu metadata verify vao bank:
+- lưu metadata verify vào bank:
   - `confidenceScore`
   - `confidenceLevel`
   - `verified`
   - `needsReview`
   - `verificationLog`
-- gan confidence vao pipeline AI/OCR/template
+- gán confidence vào pipeline AI/OCR/template
 
-File lien quan:
+File liên quan:
 - `app/src/lib/verification.ts`
 - `app/src/lib/question-bank.ts`
 - `app/src/lib/ai-generator.ts`
 
 ---
 
-## 4. Nhom B - Smart Solve va trust UI
+## 4. Nhóm B - Smart Solve và trust UI
 
-Cong viec:
-- tao `app/src/lib/smart-solve.ts`
-- tim cau tuong tu trong bank
-- few-shot giai cau moi
-- verify sau khi giai
-- hien confidence badges trong UI
-- them luong "GV verify"
+Công việc:
+- tạo `app/src/lib/smart-solve.ts`
+- tìm câu tương tự trong bank
+- few-shot giải câu mới
+- verify sau khi giải
+- hiện confidence badges trong UI
+- thêm luồng "GV verify"
 
-File lien quan:
+File liên quan:
 - `app/src/lib/smart-solve.ts`
 - `app/src/components/QuestionBankBrowser.tsx`
 - `app/src/components/OCRUpload.tsx`
 
 ---
 
-## 5. Nhom C - OCR nang cao
+## 5. Nhóm C - OCR nâng cao
 
-Cong viec:
-- nang `app/src/components/OCRUpload.tsx` thanh 2 mode day du:
-  - quet de thi
-  - quet phieu cham
-- tao `app/src/app/api/grade-scan/route.ts`
-- metadata assignment UI day du
-- AI auto-classify neu tiep tuc scope nay
-- save vao bank bang pipeline hoan chinh hon
+Công việc:
+- nâng `app/src/components/OCRUpload.tsx` thành 2 mode đầy đủ:
+  - quét đề thi
+  - quét phiếu chấm
+- tạo `app/src/app/api/grade-scan/route.ts`
+- metadata assignment UI đầy đủ
+- AI auto-classify nếu tiếp tục scope này
+- save vào bank bằng pipeline hoàn chỉnh hơn
 
-Luu y:
-- neu `fix` da chi can OCR MVP on dinh, thi phan OCR nang cao nay thuoc `update3`
+Lưu ý:
+- nếu `fix` đã chỉ cần OCR MVP ổn định, thì phần OCR nâng cao này thuộc `update3`
 
 ---
 
-## 6. Nhom D - Adaptive Difficulty hoan chinh
+## 6. Nhóm D - Adaptive Difficulty hoàn chỉnh
 
-Pham vi:
-- nhom nay chi mo rong adaptive cho flow tu luyen ca nhan (`practice mode` / `self_practice`)
-- khong mo rong adaptive de tu dong chen vao assignment/lop hoc
-- neu can intelligence cho lop hoc thi thuoc nhom classroom analytics, tach rieng voi adaptive profile ca nhan
+Phạm vi:
+- nhóm này chỉ mở rộng adaptive cho flow tự luyện cá nhân (`practice mode` / `self_practice`)
+- không mở rộng adaptive để tự động chèn vào assignment/lớp học
+- nếu cần intelligence cho lớp học thì thuộc nhóm classroom analytics, tách riêng với adaptive profile cá nhân
 
-Cong viec:
-- tao `app/src/components/AdaptiveToggle.tsx`
-- nang cap `app/src/lib/adaptive.ts` theo rule day du hon
-- hien history/rationale ro hon trong ket qua
-- cho phep auto-fill/override ro rang hon trong config
-- bo sung rule/filter ro rang de chi doc va ghi adaptive records tu `self_practice`
+Công việc:
+- tạo `app/src/components/AdaptiveToggle.tsx`
+- nâng cấp `app/src/lib/adaptive.ts` theo rule đầy đủ hơn
+- hiện history/rationale rõ hơn trong kết quả
+- cho phép auto-fill/override rõ ràng hơn trong config
+- bổ sung rule/filter rõ ràng để chỉ đọc và ghi adaptive records từ `self_practice`
 
-File lien quan:
+File liên quan:
 - `app/src/components/AdaptiveToggle.tsx`
 - `app/src/lib/adaptive.ts`
 - `app/src/components/ConfigForm.tsx`
@@ -104,21 +104,21 @@ File lien quan:
 
 ---
 
-## 7. Nhom E - Classroom intelligence va analytics nang cao
+## 7. Nhóm E - Classroom intelligence và analytics nâng cao
 
-Pham vi:
-- nhom nay chi lam analytics cho classroom/assignment sau `update2`
-- khong duoc dung classroom attempts de cap nhat adaptive difficulty ca nhan
-- neu can xep hang hoc sinh, canh bao nguy co, hay goi y day hoc thi dung snapshot/analytics rieng cua lop
+Phạm vi:
+- nhóm này chỉ làm analytics cho classroom/assignment sau `update2`
+- không được dùng classroom attempts để cập nhật adaptive difficulty cá nhân
+- nếu cần xếp hạng học sinh, cảnh báo nguy cơ, hay gợi ý dạy học thì dùng snapshot/analytics riêng của lớp
 
-Cong viec:
-- nang cap teacher dashboard sau `update2` voi analytics sau hon
-- them canh bao hoc sinh nguy co truot deadline/diem thap
-- them so sanh giua cac assignment, xu huong theo chu de, va nhom hoc sinh yeu
-- can nhac notification/reminder cho assignment gan den han
-- toi uu cac snapshot/summary de dashboard lop tai nhanh hon
+Công việc:
+- nâng cấp teacher dashboard sau `update2` với analytics sâu hơn
+- thêm cảnh báo học sinh nguy cơ trượt deadline/điểm thấp
+- thêm so sánh giữa các assignment, xu hướng theo chủ đề, và nhóm học sinh yếu
+- cân nhắc notification/reminder cho assignment gần đến hạn
+- tối ưu các snapshot/summary để dashboard lớp tải nhanh hơn
 
-File lien quan:
+File liên quan:
 - `app/src/components/TeacherDashboard.tsx`
 - `app/src/components/AssignmentAnalytics.tsx`
 - `app/src/lib/analytics.ts`
@@ -126,32 +126,32 @@ File lien quan:
 
 ---
 
-## 8. Nhom F - Docs, migration, release maturity
+## 8. Nhóm F - Docs, migration, release maturity
 
-Cong viec:
-- them docs rieng:
+Công việc:
+- thêm docs riêng:
   - `docs/manual-test-checklist.md`
   - `docs/release-gate.md`
   - `docs/data-cleanup-rules.md`
   - `docs/migration-plan.md`
   - `docs/product-scope.md`
-- logging/ops/release checklist ro rang hon
-- ke hoach migrate du lieu local -> cloud neu can
+- logging/ops/release checklist rõ ràng hơn
+- kế hoạch migrate dữ liệu local -> cloud nếu cần
 
-Luu y:
-- nhom nay quan trong cho do truong thanh cua product, nhung khong can la blocker truoc `update2`
+Lưu ý:
+- nhóm này quan trọng cho độ trưởng thành của product, nhưng không cần là blocker trước `update2`
 
 ---
 
-## 9. File/component/route thuoc `update3`
+## 9. File/component/route thuộc `update3`
 
 - `app/src/lib/smart-solve.ts`
 - `app/src/components/QuestionBankBrowser.tsx`
 - `app/src/components/AdaptiveToggle.tsx`
 - `app/src/app/api/grade-scan/route.ts`
-- docs bo sung trong `docs/*`
+- docs bổ sung trong `docs/*`
 
-Va cac file can nang cap sau `update2`:
+Và các file cần nâng cấp sau `update2`:
 - `app/src/lib/verification.ts`
 - `app/src/lib/question-bank.ts`
 - `app/src/lib/ai-generator.ts`
@@ -160,20 +160,20 @@ Va cac file can nang cap sau `update2`:
 - `app/src/app/page.tsx`
 - `app/src/lib/supabase/*`
 
-Luu y tach scope sau `update2`:
-- `app/src/lib/adaptive.ts` tiep tuc phuc vu adaptive cho tu luyen ca nhan
-- classroom analytics neu can them rule rieng thi uu tien dat trong `app/src/lib/analytics.ts` hoac module classroom lien quan, tranh tron logic voi adaptive profile ca nhan
+Lưu ý tách scope sau `update2`:
+- `app/src/lib/adaptive.ts` tiếp tục phục vụ adaptive cho tự luyện cá nhân
+- classroom analytics nếu cần thêm rule riêng thì ưu tiên đặt trong `app/src/lib/analytics.ts` hoặc module classroom liên quan, tránh trộn logic với adaptive profile cá nhân
 
 ---
 
-## 10. Dinh nghia xong `update3`
+## 10. Định nghĩa xong `update3`
 
-Chi duoc xem la xong `update3` khi:
+Chỉ được xem là xong `update3` khi:
 
-- verification 5 lop da duoc trien khai that su, khong chi heuristic toi gian
-- trust metadata da di xuyen suot qua bank va UI lien quan
-- OCR nang cao/grade scan da chay duoc neu van giu trong scope
-- adaptive da co toggle, history, va rule nang cao ro rang cho flow tu luyen ca nhan
-- classroom analytics nang cao da tach ro khoi MVP `update2`
-- classroom analytics khong lam thay doi adaptive difficulty ca nhan
-- docs van hanh/release/migration da co bo khung ro rang
+- verification 5 lớp đã được triển khai thật sự, không chỉ heuristic tối giản
+- trust metadata đã đi xuyên suốt qua bank và UI liên quan
+- OCR nâng cao/grade scan đã chạy được nếu vẫn giữ trong scope
+- adaptive đã có toggle, history, và rule nâng cao rõ ràng cho flow tự luyện cá nhân
+- classroom analytics nâng cao đã tách rõ khỏi MVP `update2`
+- classroom analytics không làm thay đổi adaptive difficulty cá nhân
+- docs vận hành/release/migration đã có bộ khung rõ ràng
