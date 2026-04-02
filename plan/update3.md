@@ -17,7 +17,7 @@ Nguyen tac:
 - verification va trust layer nang cao
 - OCR nang cao va grade scan
 - adaptive difficulty hoan chinh
-- Supabase + multi-user + auth UI
+- classroom intelligence va teaching analytics nang cao
 - docs/ops/platform maturity
 
 ---
@@ -84,11 +84,17 @@ Luu y:
 
 ## 6. Nhom D - Adaptive Difficulty hoan chinh
 
+Pham vi:
+- nhom nay chi mo rong adaptive cho flow tu luyen ca nhan (`practice mode` / `self_practice`)
+- khong mo rong adaptive de tu dong chen vao assignment/lop hoc
+- neu can intelligence cho lop hoc thi thuoc nhom classroom analytics, tach rieng voi adaptive profile ca nhan
+
 Cong viec:
 - tao `app/src/components/AdaptiveToggle.tsx`
 - nang cap `app/src/lib/adaptive.ts` theo rule day du hon
 - hien history/rationale ro hon trong ket qua
 - cho phep auto-fill/override ro rang hon trong config
+- bo sung rule/filter ro rang de chi doc va ghi adaptive records tu `self_practice`
 
 File lien quan:
 - `app/src/components/AdaptiveToggle.tsx`
@@ -98,22 +104,25 @@ File lien quan:
 
 ---
 
-## 7. Nhom E - Supabase + Multi-user + Auth
+## 7. Nhom E - Classroom intelligence va analytics nang cao
+
+Pham vi:
+- nhom nay chi lam analytics cho classroom/assignment sau `update2`
+- khong duoc dung classroom attempts de cap nhat adaptive difficulty ca nhan
+- neu can xep hang hoc sinh, canh bao nguy co, hay goi y day hoc thi dung snapshot/analytics rieng cua lop
 
 Cong viec:
-- tao `app/src/components/AuthScreen.tsx`
-- noi auth flow vao `app/src/app/page.tsx`
-- chuyen bank/exams/adaptive len Supabase neu chot huong cloud
-- role-based UI cho teacher/student
-- chot middleware/session/ownership rules
+- nang cap teacher dashboard sau `update2` voi analytics sau hon
+- them canh bao hoc sinh nguy co truot deadline/diem thap
+- them so sanh giua cac assignment, xu huong theo chu de, va nhom hoc sinh yeu
+- can nhac notification/reminder cho assignment gan den han
+- toi uu cac snapshot/summary de dashboard lop tai nhanh hon
 
 File lien quan:
-- `app/src/components/AuthScreen.tsx`
-- `app/src/lib/supabase/*`
-- `app/src/middleware.ts`
-- `app/supabase/migration.sql`
-- `app/src/lib/question-bank.ts`
-- `app/src/lib/adaptive.ts`
+- `app/src/components/TeacherDashboard.tsx`
+- `app/src/components/AssignmentAnalytics.tsx`
+- `app/src/lib/analytics.ts`
+- `app/src/lib/classrooms.ts`
 
 ---
 
@@ -139,7 +148,6 @@ Luu y:
 - `app/src/lib/smart-solve.ts`
 - `app/src/components/QuestionBankBrowser.tsx`
 - `app/src/components/AdaptiveToggle.tsx`
-- `app/src/components/AuthScreen.tsx`
 - `app/src/app/api/grade-scan/route.ts`
 - docs bo sung trong `docs/*`
 
@@ -152,6 +160,10 @@ Va cac file can nang cap sau `update2`:
 - `app/src/app/page.tsx`
 - `app/src/lib/supabase/*`
 
+Luu y tach scope sau `update2`:
+- `app/src/lib/adaptive.ts` tiep tuc phuc vu adaptive cho tu luyen ca nhan
+- classroom analytics neu can them rule rieng thi uu tien dat trong `app/src/lib/analytics.ts` hoac module classroom lien quan, tranh tron logic voi adaptive profile ca nhan
+
 ---
 
 ## 10. Dinh nghia xong `update3`
@@ -161,6 +173,7 @@ Chi duoc xem la xong `update3` khi:
 - verification 5 lop da duoc trien khai that su, khong chi heuristic toi gian
 - trust metadata da di xuyen suot qua bank va UI lien quan
 - OCR nang cao/grade scan da chay duoc neu van giu trong scope
-- adaptive da co toggle, history, va rule nang cao ro rang
-- auth/cloud flow hoan chinh neu tiep tuc Phase 9
+- adaptive da co toggle, history, va rule nang cao ro rang cho flow tu luyen ca nhan
+- classroom analytics nang cao da tach ro khoi MVP `update2`
+- classroom analytics khong lam thay doi adaptive difficulty ca nhan
 - docs van hanh/release/migration da co bo khung ro rang

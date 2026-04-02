@@ -130,9 +130,12 @@ Vi sao nam trong `fix`:
 
 ---
 
-## 6. Nhom D - Route/component dang do nhung can cho `update2`
+## 6. Nhom D - Route/component dang do nhung can de khong can `update2`
 
-Nhung muc nay du thuoc `update1`, nhung vi anh huong truc tiep product scope truoc `update2`, nen phai xong trong `fix`.
+Nguyen tac nhom nay:
+- chi giu lai nhung muc thieu se lam flow MVP hien tai gay loi hoac kho test/ban giao
+- nhung muc mo rong phuc vu classroom, auth, assignment, analytics thi de cho `update2`
+- nhung muc nang cap trust/OCR/adaptive sau MVP thi de cho `update3`
 
 ### D1. Difficulty distribution tach thanh component rieng
 
@@ -141,11 +144,9 @@ Bat buoc them:
 
 ### D2. Exam management
 
-Bat buoc them:
-- `app/src/components/ExamManager.tsx`
-- `app/src/app/api/exams/route.ts`
-- `app/src/app/api/exams/[id]/route.ts`
-- luu de vao storage dung nhu ke hoach dang ap dung
+Chi lam trong `fix` neu no can thiet de giu flow hien tai khong dang do.
+
+Neu product van chay on ma chua can route quan ly de rieng, thi muc nay co the dua sang `update2` cung luong assignment/template persistence.
 
 ### D3. Bank single-item route
 
@@ -159,7 +160,7 @@ Bat buoc fix:
 - xac nhan thong tin truong/lop/hoc ky/nam hoc di vao print layout
 
 Vi sao nam trong `fix`:
-- day la nhung phan truoc `update2` nen xong de product flow hien tai khong con dang do
+- day la nhung phan toi thieu de product flow hien tai khong con dang do truoc khi mo rong sang `update2`
 
 ---
 
@@ -207,9 +208,6 @@ Muc tieu:
 - `app/src/components/OCRUpload.tsx`
 - `app/src/components/WeaknessView.tsx`
 - `app/src/components/DifficultyDistribution.tsx`
-- `app/src/components/ExamManager.tsx`
-- `app/src/app/api/exams/route.ts`
-- `app/src/app/api/exams/[id]/route.ts`
 - `app/src/app/page.tsx`
 - `app/src/lib/utils.ts`
 - `app/src/data/question-bank.json`
@@ -225,7 +223,7 @@ Chi duoc xem la xong `fix` khi:
 - bug blocker da duoc sua
 - data local da duoc lam sach toi thieu
 - luong MVP chinh da on dinh
-- route/component dang do can thiet truoc `update2` da co
+- route/component dang do that su can thiet cho MVP da co hoac da duoc loai khoi scope `fix`
 - docs/UI khong con overclaim
 - `npm test`, `npm run lint`, `npm run build` deu pass
 
