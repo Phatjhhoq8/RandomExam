@@ -755,3 +755,63 @@ Hiện tại đang có:
 - Nếu chỉ xét trong **repo hiện tại**, thì từ lúc khởi tạo đến nay dự án đã đi từ một khung Next.js cơ bản thành một nền tảng MathQuiz AI nhiều module và nhiều lớp nghiệp vụ.
 - Phần “đã làm” không chỉ nằm ở code, mà còn nằm ở quy hoạch phase, tiêu chí fix, release gate, migration plan, test checklist và dữ liệu/migration đi kèm.
 - Điểm đặc biệt của trạng thái hiện tại là: **khối lượng công việc rất lớn đã tồn tại trong workspace, nhưng chưa được phản ánh đầy đủ bằng commit history của repo `app/`**.
+
+## 11. Bổ sung sau lần quét repo hiện tại
+
+Nguồn xác minh bổ sung:
+- `app/src/components/TeacherDashboard.tsx`
+- `app/src/components/AssignmentBuilder.tsx`
+- `app/src/components/TeacherTemplateLibrary.tsx`
+- `app/src/components/PostGenerateActionsDialog.tsx`
+- `app/src/app/api/exam-templates/route.ts`
+- `app/src/app/api/exam-templates/[id]/route.ts`
+- `app/src/lib/assignments.ts`
+- `app/src/lib/ocr-template-engine.ts`
+- `app/src/lib/exam-builder.ts`
+- `app/src/app/api/generate/route.ts`
+- `app/src/app/api/generate-v2/route.ts`
+- `app/src/components/AdminSettingsPanel.tsx`
+- `app/src/lib/system-settings.ts`
+- `app/src/lib/platform-store.ts`
+- `app/src/lib/platform-model.ts`
+- `app/src/lib/schemas.ts`
+
+Xác minh được ở trạng thái repo hiện tại:
+- workspace giáo viên đã có luồng `Kho đề của tôi`, cho phép lưu đề sau khi tạo, chọn lại đề từ kho để giao lớp, mở nhanh tạo đề mới và in với số lượng mã đề tùy chọn.
+- kho đề giáo viên đã có thao tác `Xóa khỏi kho`; xóa theo semantics archive ở kho cá nhân, không làm hỏng assignment đã giao trước đó.
+- dashboard giáo viên đã được vá các lỗi state khi chuyển qua lại giữa lớp học và khi mở/xóa dialog liên quan đến lớp.
+- flow sau khi tạo đề (`PostGenerateActionsDialog`) đã trở thành điểm trung tâm để quyết định lưu vào kho, thêm vào lớp hoặc in ngay.
+- fixed template cho OCR/upload hiện giữ nguyên cấu trúc câu hỏi gốc khi sinh mã đề; chỉ thay các literal số để tạo biến thể, không còn xáo trộn thứ tự câu hoặc đáp án.
+- xác nhận OCR/upload không chỉ tạo fixed template mà còn đẩy câu hỏi vào ngân hàng thông qua flow lưu bank ở `OCRUpload`, giúp mở rộng question bank cho các lần sinh sau.
+- cấu hình hệ thống hiện đã có thêm 2 nguồn sinh đề tách riêng cho giáo viên và học sinh ở admin settings.
+- backend generate hiện không còn tin hoàn toàn `questionSource` từ client; route sinh đề sẽ đọc mode do admin cấu hình và áp nguồn sinh tương ứng theo role hiện tại.
+- `mixed` hiện được triển khai theo hướng 50/50 bank và AI theo từng chương, rồi bù phần thiếu từ bank nếu nhánh AI không khả dụng.
+- `ai` hiện không còn âm thầm rơi xuống template/mock trong flow V2 nội bộ; thay vào đó AI lỗi được log và chiến lược fallback được điều phối ở tầng builder/route.
+- API sinh đề bản cơ bản (`/api/generate`) hiện được đồng bộ lại theo cùng chính sách nguồn sinh như bản V2, thay vì tự chạy một pipeline khác biệt.
+- ngân hàng câu hỏi hiện đã bắt đầu tách theo hai lớp nghiệp vụ: `bank giáo viên` và `bank chung`; câu hỏi upload/OCR của giáo viên đi vào bank riêng thay vì tự động lộ cho học sinh.
+- flow sinh đề giáo viên hiện ưu tiên lấy câu từ bank riêng của giáo viên trước, rồi mới bù từ bank chung; học sinh mặc định chỉ đọc bank chung.
+- thư viện giáo viên hiện có thêm luồng chọn nhiều câu trong bank riêng và chia sẻ có chọn lọc sang bank chung thay vì publish toàn bộ mặc định.
+- form `Tạo đề nâng cao` hiện đã có block cấu trúc theo `dạng bài + độ khó + chế độ chọn`, cho phép vừa để hệ thống tự sinh, vừa khóa bằng câu hỏi cụ thể hoặc template câu hỏi.
+- advanced builder hiện có picker dùng được cả `bank giáo viên`, `bank chung` và `question templates`, tạo tiền đề cho đề hybrid gồm block auto, block pick-question và block pick-template trong cùng một đề.
+- template engine cục bộ không còn là stub test-only; hiện đã đọc/ghi file `app/src/data/templates.json`, giữ được scope riêng/chung của template câu hỏi và phục vụ picker cho advanced builder.
+- taxonomy dạng bài đã được chuẩn hóa ở tầng thư viện thay vì phụ thuộc trực tiếp vào `skillTags` tự do; advanced builder, bank và template engine cùng dùng chung mapping này.
+- form nâng cao hiện có thêm phần preview chi tiết từng block trước khi generate, giúp giáo viên kiểm tra rõ chương, dạng bài, độ khó, mode và số câu/template đã khóa trước khi tạo đề.
+- taxonomy này đã được mở rộng phủ thêm nhiều chương phổ biến hơn (mệnh đề - tập hợp, hàm số, bất phương trình, vectơ, tọa độ, lượng giác, liên tục, mũ - logarit, xác suất...) thay vì chỉ vài chương mẫu ban đầu.
+- phần preview block của advanced builder hiện không chỉ hiển thị số lượng mà còn liệt kê trực tiếp một phần câu hỏi/template đã chọn, giúp giáo viên soát đề tốt hơn trước khi generate.
+- một số dialog trong UI đã được dọn lại để tránh xuất hiện đồng thời hai nút đóng cho cùng một popup; các popup dùng nút action đóng riêng đã tắt nút close ở header.
+- picker câu hỏi/template trong advanced builder hiện đã có badge nguồn màu riêng cho `bank giáo viên`, `bank chung`, `template riêng`, `template chung`, giúp phân biệt nguồn dữ liệu trực quan hơn.
+- picker này cũng đã có ô tìm kiếm và bộ lọc nguồn ngay trong dialog, giúp giáo viên lọc nhanh câu hỏi/template trước khi khóa block nâng cao.
+- kết quả trong picker giờ được sắp xếp theo độ phù hợp với từ khóa tìm kiếm thay vì chỉ lọc thô, giúp câu/template sát ý xuất hiện trước.
+- picker nâng cao hiện đã có thêm bộ lọc độ khó (`Dễ / Trung bình / Khó`) cho cả câu hỏi và template, hỗ trợ khóa block chính xác hơn theo mức độ mong muốn.
+- luồng generate hiện đã có chẩn đoán sớm hơn: nếu admin bật `AI` nhưng runtime chưa cấu hình `GOOGLE_GENERATIVE_AI_API_KEY`, API sẽ trả lỗi cấu hình rõ ràng thay vì âm thầm fallback rồi báo thiếu câu khó hiểu.
+- route generate cũng đã có precheck số câu trong bank cho các mode phụ thuộc ngân hàng, giúp user nhận được thông báo kiểu `chương hiện chỉ có X/Y câu` sớm hơn.
+- admin settings hiện đã hiển thị trạng thái `AI key đã cấu hình/chưa cấu hình`, giảm tình trạng admin bật AI nhưng không biết môi trường chạy thực tế chưa có key.
+- local question bank cũng đã được dọn thêm dữ liệu cho chương `Mệnh đề, tập hợp` và sửa một record gắn sai chapter, để giảm lỗi tạo đề do thiếu/bẩn dữ liệu nguồn.
+- kiến trúc nguồn sinh đề đã bắt đầu chuyển từ `ai/mixed/bank` sang 3 provider rõ ràng hơn: `gemini`, `ollama`, `bank`; admin có thể cấu hình riêng cho giáo viên và học sinh.
+- generation engine hiện đã hiểu fallback theo provider: `gemini -> bank`, `ollama -> bank`, đồng thời admin settings có thêm health indicator cho Ollama local.
+- fixed template từ OCR hiện đã có route render riêng ở server để sinh đề theo provider hiện hành; với `bank`, hệ thống tìm câu tương tự theo chapter/type/difficulty rồi mới giữ nguyên câu gốc nếu không tìm đủ.
+- assignment variant generation cho fixed template cũng đã đi qua provider hiện hành thay vì luôn chỉ đổi số cứng ở phía client/local như trước.
+
+Ý nghĩa của lần cập nhật report này:
+- không chỉ ghi nhận thay đổi phát sinh trong một phiên làm việc riêng lẻ,
+- mà ghi nhận lại toàn bộ những gì có thể xác minh từ trạng thái source code hiện tại của repo sau khi quét lại hệ thống.
